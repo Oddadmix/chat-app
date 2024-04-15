@@ -16,6 +16,9 @@ const { inviteUser } = require('./sockets/user');
 
 dbConnect();
 
+const buildPath = path.normalize(path.join(__dirname, '../ui/dist'));
+app.use(express.static(buildPath));
+
 const chats = {};
 
 io.on('connection', (socket) => {

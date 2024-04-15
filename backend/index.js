@@ -14,6 +14,8 @@ const { login, verifyOtp } = require('./sockets/auth');
 const { updateChatPrivacy } = require('./sockets/chat');
 const { inviteUser } = require('./sockets/user');
 
+const path = require('path');
+
 dbConnect();
 
 const buildPath = path.normalize(path.join(__dirname, '../ui/dist'));

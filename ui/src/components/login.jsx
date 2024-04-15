@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import useAppStore from '../stores/appStore';
 
 export default function Login({ socket }) {
   const [email, setEmail] = useState('');
+  const { setModal } = useAppStore();
 
   const login = () => {
     const userEmail = document.getElementById('email').value;
@@ -13,8 +15,33 @@ export default function Login({ socket }) {
     if (!socket) return;
     socket.on('otpSent', () => {
       const userEmail = document.getElementById('email').value;
-      const otp = prompt('Please enter the OTP sent to your email');
-      socket.emit('otpVerification', { otp, email: userEmail });
+      setModal({
+        show: true,
+        children: (
+          <>
+            <label
+              for='first_name'
+              class='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+            >
+              Please enter the OTP sent to your email:
+            </label>
+            <input
+              type='text'
+              id='otp'
+              class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+              placeholder=''
+              required
+            />
+          </>
+        ),
+        onClick: () => {
+          const otpValue = document.getElementById('otp').value;
+          socket.emit('otpVerification', { otp: otpValue, email: userEmail });
+          setModal({
+            show: false,
+          });
+        },
+      });
     });
 
     socket.on('otpFailed', () => {

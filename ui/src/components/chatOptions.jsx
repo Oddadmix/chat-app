@@ -1,4 +1,8 @@
+import useAppStore from '../stores/appStore';
+
 export default function ChatOptions({ chatId, socket }) {
+  const { setModal } = useAppStore();
+
   const makePrivate = () => {
     const token = localStorage.getItem('token');
     socket.emit('makePrivate', { chatId, token });
@@ -6,10 +10,34 @@ export default function ChatOptions({ chatId, socket }) {
 
   const inviteUsers = () => {
     const token = localStorage.getItem('token');
-    const invitedUser = prompt(
-      'Enter the email of the user you want to invite'
-    );
-    socket.emit('inviteUsers', { chatId, token, invitedUser });
+
+    setModal({
+      show: true,
+      children: (
+        <>
+          <label
+            for='first_name'
+            class='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+          >
+            Enter the email of the user you want to invite
+          </label>
+          <input
+            type='text'
+            id='invitedEmail'
+            class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+            placeholder=''
+            required
+          />
+        </>
+      ),
+      onClick: () => {
+        const invitedUser = document.getElementById('invitedEmail').value;
+        socket.emit('inviteUsers', { chatId, token, invitedUser });
+        setModal({
+          show: false,
+        });
+      },
+    });
   };
 
   return (
